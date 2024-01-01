@@ -1,6 +1,5 @@
 from Crypto.Util.number import getPrime, getRandomRange
 from Crypto.PublicKey import DSA
-import struct
 
 
 def generate_keys(key_size):
@@ -58,14 +57,14 @@ if __name__ == "__main__":
     # Example usage
     key_size = 1024  # Key size in bits
 
-    user1_public_key_path = 'Cryptography/Elgama/user_1/public_key.pem'
-    user1_private_key_path = 'Cryptography/Elgama/user_1/private_key.pem'
-    user1_dsa_private_key_path = 'Cryptography/Elgama/user_1/dsa_private_key.pem'
-    user1_dsa_public_key_path = 'Cryptography/Elgama/user_1/dsa_public_key.pem'
-    user2_public_key_path = 'Cryptography/Elgama/user_2/public_key.pem'
-    user2_private_key_path = 'Cryptography/Elgama/user_2/private_key.pem'
-    user2_dsa_private_key_path = 'Cryptography/Elgama/user_2/dsa_private_key.pem'
-    user2_dsa_public_key_path = 'Cryptography/Elgama/user_2/dsa_public_key.pem'
+    user1_public_key_path = 'user_1/public_key.pem'
+    user1_private_key_path = 'user_1/private_key.pem'
+    user1_dsa_private_key_path = 'user_1/dsa_private_key.pem'
+    user1_dsa_public_key_path = 'user_1/dsa_public_key.pem'
+    user2_public_key_path = 'user_2/public_key.pem'
+    user2_private_key_path = 'user_2/private_key.pem'
+    user2_dsa_private_key_path = 'user_2/dsa_private_key.pem'
+    user2_dsa_public_key_path = 'user_2/dsa_public_key.pem'
 
     # Generate key pairs for 2 users
     if user == 1:

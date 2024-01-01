@@ -89,16 +89,16 @@ if __name__ == "__main__":
     # Users using the algorithm
     user = int(input("Decrypt file, Enter your ID 1 for User 1 OR 2 for User 2: "))
 
-    user1_signature_file_path = 'Cryptography/Elgama/user_1/signature.sig'
-    user2_signature_file_path = 'Cryptography/Elgama/user_2/signature.sig'
-    encrypted_file_path = 'Cryptography/Elgama/message.enc'
-    decrypted_file_path = 'Cryptography/Elgama/message.dec'
-    user1_public_key_path = 'Cryptography/Elgama/user_1/public_key.pem'
-    user2_public_key_path = 'Cryptography/Elgama/user_2/public_key.pem'
-    user1_private_key_path = 'Cryptography/Elgama/user_1/private_key.pem'
-    user2_private_key_path = 'Cryptography/Elgama/user_2/private_key.pem'
-    user1_dsa_public_key_path = 'Cryptography/Elgama/user_1/dsa_public_key.pem'
-    user2_dsa_public_key_path = 'Cryptography/Elgama/user_1/dsa_public_key.pem'
+    user1_signature_file_path = 'user_1/signature.sig'
+    user2_signature_file_path = 'user_2/signature.sig'
+    encrypted_file_path = 'message.enc'
+    decrypted_file_path = 'message.dec'
+    user1_public_key_path = 'user_1/public_key.pem'
+    user2_public_key_path = 'user_2/public_key.pem'
+    user1_private_key_path = 'user_1/private_key.pem'
+    user2_private_key_path = 'user_2/private_key.pem'
+    user1_dsa_public_key_path = 'user_1/dsa_public_key.pem'
+    user2_dsa_public_key_path = 'user_1/dsa_public_key.pem'
 
     # Perform operations
 

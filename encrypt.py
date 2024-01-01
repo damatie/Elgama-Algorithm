@@ -31,7 +31,6 @@ def load_key_pairs(public_key_path, dsa_keys_path):
     with open(dsa_keys_path, 'rb') as f:
         dsa_key = f.read()
         dsa_private_key = DSA.import_key(dsa_key)
-        print('dsakeys', dsa_private_key)
 
     print('Keys loaded')
 
@@ -89,14 +88,14 @@ if __name__ == "__main__":
     user = int(
         input("Encrypt file, Enter your ID. 1 for User 1 OR 2 for User 2: "))
 
-    input_file_path = 'Cryptography/Elgama/message.txt'
-    user1_signature_file_path = 'Cryptography/Elgama/user_1/signature.sig'
-    user2_signature_file_path = 'Cryptography/Elgama/user_2/signature.sig'
-    encrypted_file_path = 'Cryptography/Elgama/message.enc'
-    user1_public_key_path = 'Cryptography/Elgama/user_1/public_key.pem'
-    user2_public_key_path = 'Cryptography/Elgama/user_2/public_key.pem'
-    user1_dsa_private_key_path = 'Cryptography/Elgama/user_1/dsa_private_key.pem'
-    user2_dsa_private_key_path = 'Cryptography/Elgama/user_2/dsa_private_key.pem'
+    input_file_path = 'message.txt'
+    user1_signature_file_path = 'signature.sig'
+    user2_signature_file_path = 'user_2/signature.sig'
+    encrypted_file_path = 'message.enc'
+    user1_public_key_path = 'user_1/public_key.pem'
+    user2_public_key_path = 'user_2/public_key.pem'
+    user1_dsa_private_key_path = 'user_1/dsa_private_key.pem'
+    user2_dsa_private_key_path = 'user_2/dsa_private_key.pem'
 
     # Perform operations
     if user == 1:
