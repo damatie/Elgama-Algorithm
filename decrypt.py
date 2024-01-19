@@ -1,119 +1,71 @@
-from Crypto.Util.number import getPrime, getRandomRange, inverse
+from Crypto.Util.number import inverse
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import DSA
 from Crypto.Signature import DSS
 
+def bytes_to_int(b):
+    return int.from_bytes(b, byteorder='big', signed=False)
 
-# Load generated keys
-def load_key_pairs(public_key_path, private_key_path, dsa_keys_path):
+def load_elgamal_private_key(file_path):
     length = 256
+    with open(file_path, 'rb') as f:
+        private_key = bytes_to_int(f.read(length))
+    return private_key
 
-    def bytes_to_int(b):
-        return int.from_bytes(b, byteorder='big', signed=False)
+def load_elgamal_public_key(file_path):
+    length = 256
+    with open(file_path, 'rb') as f:
+        p, g, h = (bytes_to_int(f.read(length)) for _ in range(3))
+    return (p, g, h)
 
-    print('Loading keys please wait...')
+def load_dsa_public_key(file_path):
+    with open(file_path, 'rb') as f:
+        return DSA.import_key(f.read())
 
-    # Read the key pairs from files
-    with open(private_key_path, 'rb') as f:
-        private_key_bytes = f.read()
-        private_key = bytes_to_int(private_key_bytes)
+def decrypt_data(ciphertext, private_key, public_key):
+    p, g, h = public_key
+    c1, c2 = ciphertext
+    s_inv = inverse(pow(c1, private_key, p), p)
+    plaintext = (c2 * s_inv) % p
+    return plaintext.to_bytes((plaintext.bit_length() + 7) // 8, byteorder='big')
 
-    with open(public_key_path, 'rb') as f:
-        # public_key = f.read()
-        p_bytes = f.read(length)
-        g_bytes = f.read(length)
-        h_bytes = f.read(length)
-
-        p = bytes_to_int(p_bytes)
-        g = bytes_to_int(g_bytes)
-        h = bytes_to_int(h_bytes)
-
-        public_key = (p, g, h)
-
-  # Read the dsa keys
-    with open(dsa_keys_path, 'rb') as f:
-        dsa_key = f.read()
-        dsa_public_key = DSA.import_key(dsa_key)
-    print('Keys loaded')
-
-    return public_key, private_key, dsa_public_key
-
-
-def verify_signature(dsa_key, data, signature):
-    print("Verifying file signature and hash ...")
+def verify_signature(dsa_public_key, data, signature):
     h = SHA256.new(data)
-    verifier = DSS.new(dsa_key.publickey(), 'fips-186-3')
+    verifier = DSS.new(dsa_public_key, 'fips-186-3')
     try:
         verifier.verify(h, signature)
         return True
     except ValueError:
         return False
 
+def decrypt_and_verify(user_id, encrypted_file, signature_file, decrypted_file):
+    # Load keys
+    elgamal_private_key = load_elgamal_private_key(f'user_{user_id}/private_key.pem')
+    elgamal_public_key = load_elgamal_public_key(f'user_{user_id}/public_key.pem')
+    dsa_public_key = load_dsa_public_key(f'user_{3 - user_id}/dsa_public_key.pem')
 
-def decrypt(private_key, ciphertext, p):
-    print("Decrypting file ...")
-    c1, c2 = ciphertext
-    s = pow(c1, private_key, p)
-    s_inv = inverse(s, p)
-    plaintext = (c2 * s_inv) % p
-    return plaintext
-
-
-def decrypt_and_verify(public_key, private_key, encrypted_path, signature_path, decrypted_path, dsa_public_key):
     # Read the encrypted data and signature
-    with open(encrypted_path, 'rb') as f:
+    with open(encrypted_file, 'rb') as f:
         ciphertext = eval(f.read())
-    with open(signature_path, 'rb') as f:
+    with open(signature_file, 'rb') as f:
         signature = f.read()
 
-    # Decrypt the data
-    plaintext_int = decrypt(private_key, ciphertext, public_key[0])
-    plaintext = plaintext_int.to_bytes(
-        (plaintext_int.bit_length() + 7) // 8, byteorder='big')
-
-    # Verify the signature
+    # Decrypt the data and verify the signature
+    plaintext = decrypt_data(ciphertext, elgamal_private_key, elgamal_public_key)
     if verify_signature(dsa_public_key, plaintext, signature):
-        print("Signature verified.")
-
-        # Write the decrypted data to a file
-        with open(decrypted_path, 'wb') as f:
+        with open(decrypted_file, 'wb') as f:
             f.write(plaintext)
-        print("File decryption completed")
+        print("Decryption and signature verification successful.")
     else:
         print("Signature verification failed.")
-        print("File decryption failed")
 
+def main():
+    user_id = int(input("Decrypt message: Enter your ID (1 for User 1 OR 2 for User 2): "))
+    encrypted_file_path = 'message.enc'
+    signature_file_path = f'user_{3 - user_id}/signature.sig'
+    decrypted_file_path = 'message.dec'
+
+    decrypt_and_verify(user_id, encrypted_file_path, signature_file_path, decrypted_file_path)
 
 if __name__ == "__main__":
-
-    # Users using the algorithm
-    user = int(input("Decrypt file, Enter your ID 1 for User 1 OR 2 for User 2: "))
-
-    user1_signature_file_path = 'user_1/signature.sig'
-    user2_signature_file_path = 'user_2/signature.sig'
-    encrypted_file_path = 'message.enc'
-    decrypted_file_path = 'message.dec'
-    user1_public_key_path = 'user_1/public_key.pem'
-    user2_public_key_path = 'user_2/public_key.pem'
-    user1_private_key_path = 'user_1/private_key.pem'
-    user2_private_key_path = 'user_2/private_key.pem'
-    user1_dsa_public_key_path = 'user_1/dsa_public_key.pem'
-    user2_dsa_public_key_path = 'user_1/dsa_public_key.pem'
-
-    # Perform operations
-
-    if user == 1:
-        # User 1 will decrypt the file with user 1 private key and verify signature with User 2 dsa public key
-        public_key, private_key, dsa_public_key = load_key_pairs(user2_public_key_path,
-                                                                 user2_private_key_path, user2_dsa_public_key_path)
-
-        decrypt_and_verify(public_key, private_key, encrypted_file_path,
-                           user2_signature_file_path, decrypted_file_path, dsa_public_key)
-
-    elif user == 2:
-        # User 2 will decrypt the file with user 2 private key and verify signature with User 1 dsa public key
-        public_key, private_key, dsa_public_key = load_key_pairs(user2_public_key_path,
-                                                                 user2_private_key_path, user1_dsa_public_key_path)
-
-        decrypt_and_verify(public_key, private_key, encrypted_file_path,
-                           user1_signature_file_path, decrypted_file_path, dsa_public_key)
+    main()
